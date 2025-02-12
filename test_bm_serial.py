@@ -48,7 +48,7 @@ def get_pub_header(node_id: int) -> bytearray:
         + bytearray.fromhex("0101")
     )
 
-def spotter_tx(uart, node_id: int, data: bytes) -> int:
+def spotter_tx(node_id: int, data: bytes) -> bytes:
     topic = b"spotter/transmit-data"
     packet = (
         get_pub_header(node_id)
@@ -57,10 +57,9 @@ def spotter_tx(uart, node_id: int, data: bytes) -> int:
         + b"\x01"
         + data
     )
-    cobs = finalize_packet(packet)
-    return uart.write(cobs)
+    return finalize_packet(packet)
 
-def spotter_log(uart, node_id: int, filename: str, data: str) -> int:
+def spotter_log(node_id: int, filename: str, data: str) -> bytes:
     topic = b"spotter/fprintf"
     packet = (
         get_pub_header(node_id)
@@ -73,8 +72,16 @@ def spotter_log(uart, node_id: int, filename: str, data: str) -> int:
         + str.encode(data)
         + str.encode("\n")
     )
-    cobs = finalize_packet(packet)
-    return uart.write(cobs)
+    return finalize_packet(packet)
+
+def write_bytes_to_uart(path, bytes: bytes, baudrate=115200):
+    uart = serial.Serial(port=path, baudrate=baudrate)
+    fcntl.lockf(uart, fcntl.LOCK_EX)
+
+    uart.write(bytes)
+
+    fcntl.lockf(uart, fcntl.LOCK_UN)
+    uart.close()
 
 import time
 
@@ -86,9 +93,7 @@ while True:
     if now - last_send > 5:
         last_send = now
         print("publishing" + str(now),file=sys.stderr)
-        uart = serial.Serial(port=sys.argv[1], baudrate=115200)
-        fcntl.lockf(uart, fcntl.LOCK_EX)
-        spotter_tx(uart, node_id, b"sensor12: 1234.56, binary_ok_too: \x00\x01\x02\x03\xff\xfe\xfd")
-        spotter_log(uart, node_id, "testmctest.log","Sensor 1: 1234.56. More detailed human-readable info for the SD card logs.")
-        fcntl.lockf(uart, fcntl.LOCK_UN)
-        uart.close()
+
+        write_bytes_to_uart(sys.argv[1], spotter_tx(node_id, b"sensor12: 1234.56, binary_ok_too: \x00\x01\x02\x03\xff\xfe\xfd"))
+
+        write_bytes_to_uart(sys.argv[1], spotter_log(node_id, "testmctest.log", "Sensor 1: 1234.56. More detailed human-readable info for the SD card logs."))
