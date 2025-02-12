@@ -77,7 +77,6 @@ def spotter_log(uart, node_id: int, filename: str, data: str) -> int:
 
 import time
 
-uart = serial.Serial(port=sys.argv[1], baudrate=115200)
 node_id = 0xC0FFEEEEF0CACC1A
 
 last_send = time.time()
@@ -86,5 +85,7 @@ while True:
     if now - last_send > 5:
         last_send = now
         print("publishing" + str(now),file=sys.stderr)
+        uart = serial.Serial(port=sys.argv[1], baudrate=115200)
         spotter_tx(uart, node_id, b"sensor12: 1234.56, binary_ok_too: \x00\x01\x02\x03\xff\xfe\xfd")
         spotter_log(uart, node_id, "testmctest.log","Sensor 1: 1234.56. More detailed human-readable info for the SD card logs.")
+        uart.close()
