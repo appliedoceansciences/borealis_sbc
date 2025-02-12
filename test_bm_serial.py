@@ -87,12 +87,14 @@ import time
 
 node_id = 0xC0FFEEEEF0CACC1A
 
-last_send = time.time()
+interval = 5
+last_send = time.time() - interval
+
 while True:
     now = time.time()
-    if now - last_send > 5:
-        last_send = now
-        print("publishing" + str(now),file=sys.stderr)
+    if now - last_send >= interval:
+        last_send += interval
+        print("publishing at " + str(now), file=sys.stderr)
 
         write_bytes_to_uart(sys.argv[1], spotter_tx(node_id, b"sensor12: 1234.56, binary_ok_too: \x00\x01\x02\x03\xff\xfe\xfd"))
 
