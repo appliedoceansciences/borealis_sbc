@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import serial
 import sys
+import fcntl
 
 # Adapted from https://github.com/cmcqueen/cobs-python
 def cobs_encode(in_bytes: bytes) -> bytes:
@@ -86,6 +87,8 @@ while True:
         last_send = now
         print("publishing" + str(now),file=sys.stderr)
         uart = serial.Serial(port=sys.argv[1], baudrate=115200)
+        fcntl.lockf(uart, fcntl.LOCK_EX)
         spotter_tx(uart, node_id, b"sensor12: 1234.56, binary_ok_too: \x00\x01\x02\x03\xff\xfe\xfd")
         spotter_log(uart, node_id, "testmctest.log","Sensor 1: 1234.56. More detailed human-readable info for the SD card logs.")
+        fcntl.lockf(uart, fcntl.LOCK_UN)
         uart.close()
