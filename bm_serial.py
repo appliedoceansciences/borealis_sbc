@@ -74,14 +74,10 @@ def spotter_log(node_id: int, filename: str, data: str) -> bytes:
     )
     return finalize_packet(packet)
 
-def write_bytes_to_uart(path, bytes: bytes, baudrate=115200):
-    uart = serial.Serial(port=path, baudrate=baudrate)
+def lock_uart_and_write_bytes(uart, bytes: bytes):
     fcntl.lockf(uart, fcntl.LOCK_EX)
-
     uart.write(bytes)
-
     fcntl.lockf(uart, fcntl.LOCK_UN)
-    uart.close()
 
 if __name__ == '__main__':
     import time
@@ -90,6 +86,7 @@ if __name__ == '__main__':
 
         interval = 5
         last_send = time.time() - interval
+        uart = serial.Serial(port=sys.argv[1], baudrate=115200)
 
         while True:
             now = time.time()
@@ -97,8 +94,8 @@ if __name__ == '__main__':
                 last_send += interval
                 print("publishing at " + str(now), file=sys.stderr)
 
-                write_bytes_to_uart(sys.argv[1], spotter_tx(node_id, b"sensor12: 1234.56, binary_ok_too: \x00\x01\x02\x03\xff\xfe\xfd"))
+                lock_uart_and_write_bytes(uart, spotter_tx(node_id, b"sensor12: 1234.56, binary_ok_too: \x00\x01\x02\x03\xff\xfe\xfd"))
 
-                write_bytes_to_uart(sys.argv[1], spotter_log(node_id, "testmctest.log", "Sensor 1: 1234.56. More detailed human-readable info for the SD card logs."))
+                lock_uart_and_write_bytes(uart, spotter_log(node_id, "testmctest.log", "Sensor 1: 1234.56. More detailed human-readable info for the SD card logs."))
 
     main()
