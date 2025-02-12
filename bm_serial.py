@@ -83,19 +83,22 @@ def write_bytes_to_uart(path, bytes: bytes, baudrate=115200):
     fcntl.lockf(uart, fcntl.LOCK_UN)
     uart.close()
 
-import time
+if __name__ == '__main__':
+    import time
+    def main():
+        node_id = 0xC0FFEEEEF0CACC1A
 
-node_id = 0xC0FFEEEEF0CACC1A
+        interval = 5
+        last_send = time.time() - interval
 
-interval = 5
-last_send = time.time() - interval
+        while True:
+            now = time.time()
+            if now - last_send >= interval:
+                last_send += interval
+                print("publishing at " + str(now), file=sys.stderr)
 
-while True:
-    now = time.time()
-    if now - last_send >= interval:
-        last_send += interval
-        print("publishing at " + str(now), file=sys.stderr)
+                write_bytes_to_uart(sys.argv[1], spotter_tx(node_id, b"sensor12: 1234.56, binary_ok_too: \x00\x01\x02\x03\xff\xfe\xfd"))
 
-        write_bytes_to_uart(sys.argv[1], spotter_tx(node_id, b"sensor12: 1234.56, binary_ok_too: \x00\x01\x02\x03\xff\xfe\xfd"))
+                write_bytes_to_uart(sys.argv[1], spotter_log(node_id, "testmctest.log", "Sensor 1: 1234.56. More detailed human-readable info for the SD card logs."))
 
-        write_bytes_to_uart(sys.argv[1], spotter_log(node_id, "testmctest.log", "Sensor 1: 1234.56. More detailed human-readable info for the SD card logs."))
+    main()
