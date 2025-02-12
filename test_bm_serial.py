@@ -11,7 +11,7 @@ class BristlemouthSerial:
         else:
             self.uart = uart
 
-    def spotter_tx(self, data: bytes) -> int | None:
+    def spotter_tx(self, data: bytes) -> int:
         topic = b"spotter/transmit-data"
         packet = (
             self.get_pub_header()
@@ -23,7 +23,7 @@ class BristlemouthSerial:
         cobs = self.finalize_packet(packet)
         return self.uart.write(cobs)
 
-    def spotter_log(self, filename: str, data: str) -> int | None:
+    def spotter_log(self, filename: str, data: str) -> int:
         topic = b"spotter/fprintf"
         packet = (
             self.get_pub_header()
