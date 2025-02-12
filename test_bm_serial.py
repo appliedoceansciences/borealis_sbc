@@ -7,7 +7,7 @@ class BristlemouthSerial:
         self.node_id = node_id
         
         if uart is None:
-            self.uart = serial.Serial(port='/dev/cu.usbserial-AI05B6TA',baudrate=115200)
+            self.uart = serial.Serial(port=sys.argv[1], baudrate=115200)
         else:
             self.uart = uart
 
