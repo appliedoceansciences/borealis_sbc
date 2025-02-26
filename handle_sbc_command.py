@@ -8,18 +8,22 @@ def lock_uart_and_write_bytes(uart, bytes: bytes):
     uart.write(bytes)
     fcntl.lockf(uart, fcntl.LOCK_UN)
 
-if __name__ == '__main__':
-    def main():
-        uart = serial.Serial(port=sys.argv[1], baudrate=115200)
-        lock_uart_and_write_bytes(uart,b"\x02\x3f\x00")
-        while True:
-            line = uart.readline().decode('utf-8').strip()
-            if line == '': continue
-            print(line, file=sys.stderr)
-            if line.startswith('sbc_command: '):
-                command = line.removeprefix('sbc_command: ')
-                print(command)
-                break
+uart = serial.Serial(port=sys.argv[1], baudrate=115200)
 
-    main()
+# send a cobs packet containing '?'
+lock_uart_and_write_bytes(uart, b"\x02\x3f\x00")
 
+# loop until we get the expected response. TODO: repeat the request after timeout
+while True:
+    line = uart.readline().decode('utf-8').strip()
+    if line == '': continue
+
+    print(line, file=sys.stderr)
+
+    # check for and remove the expected prefix, ignoring other lines
+    command = line.removeprefix('sbc_command: ')
+    if line == command: continue
+
+    # TODO: parse and validate a checksum?
+    print(command)
+    break
