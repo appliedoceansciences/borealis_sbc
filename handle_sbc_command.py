@@ -2,6 +2,7 @@
 import serial
 import sys
 import fcntl
+import subprocess
 
 def lock_uart_and_write_bytes(uart, bytes: bytes):
     fcntl.lockf(uart, fcntl.LOCK_EX)
@@ -24,6 +25,12 @@ while True:
     command = line.removeprefix('sbc_command: ')
     if line == command: continue
 
-    # TODO: parse and validate a checksum?
-    print(command)
+    # TODO: validate a checksum
+
+    # TODO: smarter validation of which commands can be run?
+    if not command.startswith('systemctl start '):
+        print('ignoring unexpected command', file=sys.stderr)
+        continue
+
+    subprocess.run(command.split(' '), shell=False)
     break
