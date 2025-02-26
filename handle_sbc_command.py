@@ -32,5 +32,8 @@ while True:
         print('ignoring unexpected command', file=sys.stderr)
         continue
 
+    # close uart just in case the command results in something (gpsd) opening it
+    uart.close()
+
     subprocess.run(command.split(' '), shell=False)
     break
