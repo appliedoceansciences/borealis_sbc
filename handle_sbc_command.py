@@ -9,14 +9,22 @@ def lock_uart_and_write_bytes(uart, bytes: bytes):
     uart.write(bytes)
     fcntl.lockf(uart, fcntl.LOCK_UN)
 
-uart = serial.Serial(port=sys.argv[1], baudrate=115200)
+uart = serial.Serial(port=sys.argv[1], baudrate=115200, timeout=1)
 
 # send a cobs packet containing '?'
 lock_uart_and_write_bytes(uart, b"\x02\x3f\x00")
 
-# loop until we get the expected response. TODO: repeat the request after timeout
+# loop until we get the expected response
 while True:
-    line = uart.readline().decode('utf-8').strip()
+    line = uart.readline().decode('utf-8')
+
+    # if the above returns without a newline, it timed out, we should repeat the request
+    if line == '':
+        lock_uart_and_write_bytes(uart, b"\x02\x3f\x00")
+        continue
+
+    # strip newline and ignore empty lines
+    line = line.strip()
     if line == '': continue
 
     print(line, file=sys.stderr)
