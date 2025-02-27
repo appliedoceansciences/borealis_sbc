@@ -1,0 +1,9 @@
+[Unit]
+Description=handle_sbc_command
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/handle_sbc_command.py /dev/ttyAMA0
+
+[Install]
+WantedBy=multi-user.target
