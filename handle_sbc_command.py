@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# this script should be placed in /usr/local/bin/
 import serial
 import sys
 import fcntl
