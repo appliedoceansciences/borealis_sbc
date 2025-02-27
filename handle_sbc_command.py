@@ -2,7 +2,7 @@
 import serial
 import sys
 import fcntl
-import subprocess
+import os
 
 def lock_uart_and_write_bytes(uart, bytes: bytes):
     fcntl.lockf(uart, fcntl.LOCK_EX)
@@ -43,5 +43,7 @@ while True:
     # close uart just in case the command results in something (gpsd) opening it
     uart.close()
 
-    subprocess.run(command.split(' '), shell=False)
-    break
+    # replace this process with the command
+    args = command.split(' ')
+    os.execvp(args[0], args)
+    # not reached
