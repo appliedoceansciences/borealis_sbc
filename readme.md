@@ -1,1 +1,3 @@
 This repository is a rough port of [https://github.com/bristlemouth/bm_serial/blob/develop/circuitpython/bm_serial.py] to generic Python that will run on a Raspberry Pi or macOS using the system Python, with an OS-level exclusive lock around the UART access, such that multiple processes on the Pi can send messages to the Bristlemouth ecosystem via the `serial_bridge` functionality on an attached Mote.
+
+This repository also includes a nominal implementation of the SBC end of the initial conversation between the Borealis Mote and the attached SBC, which allows the Mote to specify which services should run at startup, prior to handing the uart off to those services.
