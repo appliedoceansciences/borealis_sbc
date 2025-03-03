@@ -3,29 +3,36 @@ import serial
 import sys
 import fcntl
 
-# Adapted from https://github.com/cmcqueen/cobs-python
-def cobs_encode(in_bytes: bytes) -> bytes:
-    final_zero = True
-    out_bytes = bytearray()
-    idx = 0
-    search_start_idx = 0
-    for in_char in in_bytes:
-        if in_char == 0:
-            final_zero = True
-            out_bytes.append(idx - search_start_idx + 1)
-            out_bytes += in_bytes[search_start_idx:idx]
-            search_start_idx = idx + 1
+def cobs_encode_with_trailing_zero(src):
+    # minor refactor of example from stuart and baker (1999)
+    P = len(src)
+    out = bytearray(P + (P + 253) // 254 + 2)
+    code = 0x01
+    dst = 1
+    code_ptr = 0
+
+    for byte in src:
+        flush = False
+        if byte == 0:
+            flush = True
         else:
-            if idx - search_start_idx == 0xFD:
-                final_zero = False
-                out_bytes.append(0xFF)
-                out_bytes += in_bytes[search_start_idx : idx + 1]
-                search_start_idx = idx + 1
-        idx += 1
-    if idx != search_start_idx or final_zero:
-        out_bytes.append(idx - search_start_idx + 1)
-        out_bytes += in_bytes[search_start_idx:idx]
-    return bytes(out_bytes)
+            out[dst] = byte
+            dst += 1
+            code += 1
+
+            if 0xFF == code:
+                flush = True
+
+        if flush:
+            out[code_ptr] = code
+            code_ptr = dst
+            dst += 1
+            code = 0x01
+
+    out[code_ptr] = code
+    out[dst] = 0
+
+    return bytes(out)[0:(dst + 1)]
 
 def crc(seed: int, src: bytes) -> int:
     e, f = 0, 0
@@ -39,7 +46,7 @@ def finalize_packet(packet: bytearray) -> bytes:
     checksum = crc(0, packet)
     packet[2] = checksum & 0xFF
     packet[3] = (checksum >> 8) & 0xFF
-    return cobs_encode(packet) + b"\x00"
+    return cobs_encode_with_trailing_zero(packet)
 
 def get_pub_header(node_id: int) -> bytearray:
     return (
