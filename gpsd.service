@@ -1,0 +1,11 @@
+[Unit]
+Description=gpsd
+After=chronyd.service
+
+[Service]
+Type=forking
+ExecStart=sh -c "/usr/bin/socat -d -d /dev/ttyAMA0,b115200 UDP4:127.0.0.1:5000 & exec /usr/sbin/gpsd -D 5 -b -r -n udp://127.0.0.1:5000"
+
+[Install]
+WantedBy=multi-user.target
+
