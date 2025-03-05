@@ -104,22 +104,6 @@ def get_node_id():
     return 0xC0FFEEEEF0CACC1A
 
 if __name__ == '__main__':
-    import time
-    def main():
-        node_id = get_node_id()
-
-        interval = 5
-        last_send = time.time() - interval
-        uart = serial.Serial(port=sys.argv[1], baudrate=115200)
-
-        while True:
-            now = time.time()
-            if now - last_send >= interval:
-                last_send += interval
-                print("publishing at " + str(now), file=sys.stderr)
-
-                lock_uart_and_write_bytes(uart, spotter_tx(node_id, b"sensor12: 1234.56, binary_ok_too: \x00\x01\x02\x03\xff\xfe\xfd"))
-                lock_uart_and_write_bytes(uart, spotter_log(node_id, "testmctest.log", "Sensor 1: 1234.56. More detailed human-readable info for the SD card logs."))
-                lock_uart_and_write_bytes(uart, spotter_log_console(node_id, "spotter_log_console : printf hello world!, does not save to sd card"))
-
-    main()
+    node_id = get_node_id()
+    uart = serial.Serial(port=sys.argv[1], baudrate=115200)
+    lock_uart_and_write_bytes(uart, spotter_log_console(node_id, "hello world from borealis sbc"))
