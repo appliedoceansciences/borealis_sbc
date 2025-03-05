@@ -94,15 +94,20 @@ def spotter_log_console(node_id: int, data: str) -> bytes:
         + str.encode("\n")
     )
     return finalize_packet(packet)
+
 def lock_uart_and_write_bytes(uart, bytes: bytes):
     fcntl.lockf(uart, fcntl.LOCK_EX)
     uart.write(bytes)
     fcntl.lockf(uart, fcntl.LOCK_UN)
 
+def get_node_id():
+    # TODO: replace this with get_node_id() as prototyped by Tiago
+    return 0xC0FFEEEEF0CACC1A
+
 if __name__ == '__main__':
     import time
     def main():
-        node_id = 0xC0FFEEEEF0CACC1A
+        node_id = get_node_id()
 
         interval = 5
         last_send = time.time() - interval
