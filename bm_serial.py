@@ -81,6 +81,19 @@ def spotter_log(node_id: int, filename: str, data: str) -> bytes:
     )
     return finalize_packet(packet)
 
+def spotter_log_console(node_id: int, data: str) -> bytes:
+    topic = b"spotter/printf"
+    packet = (
+        get_pub_header(node_id)
+        + len(topic).to_bytes(2, "little")
+        + topic
+        + (b"\x00" * 8)
+        + (b"\x00" * 2)
+        + (len(data) + 1).to_bytes(2, "little")
+        + str.encode(data)
+        + str.encode("\n")
+    )
+    return finalize_packet(packet)
 def lock_uart_and_write_bytes(uart, bytes: bytes):
     fcntl.lockf(uart, fcntl.LOCK_EX)
     uart.write(bytes)
@@ -102,7 +115,7 @@ if __name__ == '__main__':
                 print("publishing at " + str(now), file=sys.stderr)
 
                 lock_uart_and_write_bytes(uart, spotter_tx(node_id, b"sensor12: 1234.56, binary_ok_too: \x00\x01\x02\x03\xff\xfe\xfd"))
-
                 lock_uart_and_write_bytes(uart, spotter_log(node_id, "testmctest.log", "Sensor 1: 1234.56. More detailed human-readable info for the SD card logs."))
+                lock_uart_and_write_bytes(uart, spotter_log_console(node_id, "spotter_log_console : printf hello world!, does not save to sd card"))
 
     main()
