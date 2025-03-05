@@ -89,9 +89,8 @@ def spotter_log_console(node_id: int, data: str) -> bytes:
         + topic
         + (b"\x00" * 8)
         + (b"\x00" * 2)
-        + (len(data) + 1).to_bytes(2, "little")
+        + len(data).to_bytes(2, "little")
         + str.encode(data)
-        + str.encode("\n")
     )
     return finalize_packet(packet)
 
