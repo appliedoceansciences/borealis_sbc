@@ -2,6 +2,9 @@
 import serial
 import sys
 import fcntl
+import os
+import secrets
+import string
 
 def cobs_encode_with_trailing_zero(src):
     # minor refactor of example from stuart and baker (1999)
@@ -100,8 +103,40 @@ def lock_uart_and_write_bytes(uart, bytes: bytes):
     fcntl.lockf(uart, fcntl.LOCK_UN)
 
 def get_node_id():
-    # TODO: replace this with get_node_id() as prototyped by Tiago
-    return 0xC0FFEEEEF0CACC1A
+    
+    node_id = None
+    
+    try:
+        # Use unique RPi serial number of the CPU
+        with open('/proc/cpuinfo', 'r') as f:
+            for line in f:
+                if line[0:6]=='Serial':
+                    node_id = line[10:26]
+    except:
+        # In case CPU method doesn't work, create random, persistent node_id file
+        node_id_path = "./node_id"
+
+        # First try to open file, since node_id may already exist
+        if os.path.exists(node_id_path):
+            with open(node_id_path, "r") as f:
+                node_id = f.read().strip()
+            generate_node_id = False
+    
+            # Sanity check if node_id is in expected format - 16 hex characters - otherwhise a new one must be generated
+            if not ((len(node_id) == 16) and all(c in string.hexdigits for c in node_id)):
+                generate_node_id = True
+        else:
+            generate_node_id = True
+
+        # In case it doesn't exist or it is incorrectly formatted, generate a new one
+        if generate_node_id:
+            node_id = secrets.token_hex(8)
+            with open(node_id_path, "w") as f:
+                f.write(node_id)
+    
+    node_id = int(node_id, 16)
+
+    return node_id
 
 if __name__ == '__main__':
     node_id = get_node_id()
