@@ -36,10 +36,7 @@ while True:
 
     # TODO: validate a checksum
 
-    # TODO: smarter validation of which commands can be run?
-    if not command.startswith('systemctl start '):
-        print('ignoring unexpected command', file=sys.stderr)
-        continue
+    # TODO: validation of which commands can be run?
 
     # close uart just in case the command results in something (gpsd) opening it
     uart.close()
