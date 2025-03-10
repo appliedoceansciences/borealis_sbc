@@ -14,6 +14,7 @@ mv cobs_to_shm/cobs_to_shm /usr/local/bin/
 make -C cobs_to_shm clean
 
 cp handle_sbc_command.py /usr/local/bin/
+cp borealis_default.sh /usr/local/bin/
 
 cp *.service /etc/systemd/system/
 systemctl daemon-reload
