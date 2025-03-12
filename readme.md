@@ -66,5 +66,9 @@ Disable Linux serial console on the GPIO UART:
 
     perl -i -pe 's/console=serial0,115200 //' /boot/firmware/cmdline.txt
 
+Configure sudo to allow `sudo -i` without requiring a password:
+
+    printf '%%sudo ALL=NOPASSWD: /bin/bash\n' > /etc/sudoers.d/010_sudo_dash_i_nopasswd
+
 Reboot the board with `reboot` to apply the above mods, and then log in and use `sudo -i` to get back to a root prompt.
 
