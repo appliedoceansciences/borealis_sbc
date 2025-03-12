@@ -72,3 +72,17 @@ Configure sudo to allow `sudo -i` without requiring a password:
 
 Reboot the board with `reboot` to apply the above mods, and then log in and use `sudo -i` to get back to a root prompt.
 
+### Adding backup networks
+
+After logging in via ssh, run:
+
+    sudo -i nmtui
+
+Here select `Edit a connection`, then `<Add>`, the `Wi-Fi` and fill out the following information regarding SSID and Security (WPA and WPA2 Personal is most likely the security type dealth with).
+
+In order to select a different network to connect to,
+head back to the main menu and select `Activate a connection`.
+Here select the connection to activate.
+
+If the main network is not found on the Pi on boot,
+networks added in the `Edit a connection` will be used.
