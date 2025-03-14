@@ -78,7 +78,7 @@ After logging in via ssh, run:
 
     sudo -i nmtui
 
-Here select `Edit a connection`, then `<Add>`, the `Wi-Fi` and fill out the following information regarding SSID and Security (WPA and WPA2 Personal is most likely the security type dealth with).
+Here select `Edit a connection`, then `<Add>`, them `Wi-Fi` and fill out the following information regarding SSID and Security (WPA and WPA2 Personal is most likely the security type).
 
 In order to select a different network to connect to,
 head back to the main menu and select `Activate a connection`.
