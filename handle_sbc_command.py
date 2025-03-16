@@ -22,7 +22,7 @@ def handle_gpzda_or_gprmc(line):
         print('nmea checksum error', file=sys.stderr)
         return False
 
-    if 'ZDA' == payload[1:3]:
+    if 'ZDA' == payload[2:5]:
         try:
             tokens = payload.split(',')
             hour = int(tokens[1][0:2])
@@ -33,7 +33,7 @@ def handle_gpzda_or_gprmc(line):
             year = int(tokens[4])
         except: return False
 
-    elif 'RMC' == line[2:4]:
+    elif 'RMC' == payload[2:5]:
         try:
             tokens = payload.split(',')
             hour = int(tokens[1][0:2])
