@@ -55,6 +55,7 @@ def lock_uart_and_write_bytes(uart, bytes: bytes):
     uart.write(bytes)
     fcntl.lockf(uart, fcntl.LOCK_UN)
 
+log = open('/var/run/bristlemouth_init_log.txt', 'wt')
 uart = serial.Serial(port=sys.argv[1], baudrate=115200, timeout=1)
 
 # send a cobs packet containing '?'
@@ -78,6 +79,7 @@ while not handled_time or sbc_command is None:
     if line == '': continue
 
     print(line, file=sys.stderr)
+    print(line, file=log, flush=True)
 
     if handle_gpzda_or_gprmc(line):
         handled_time = True
