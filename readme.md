@@ -56,7 +56,7 @@ Prevent some systemd default behaviour which can interfere with persistent proce
 Disable swap:
 
     # trixie and later
-    perl -i -pe 's/\n/\n systemd.zram=0\n/' /boot/firmware/cmdline.txt
+    perl -i -pe 's/rootwait/rootwait systemd.zram=0/' /boot/firmware/cmdline.txt
 
     # bookworm and earlier
     perl -i -pe 's/CONF_SWAPSIZE=512/CONF_SWAPSIZE=0/' /etc/dphys-swapfile
