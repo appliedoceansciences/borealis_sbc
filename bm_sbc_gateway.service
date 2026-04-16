@@ -1,0 +1,16 @@
+[Unit]
+Description=bm_sbc_gateway
+After=dev-serial0.device
+Wants=dev-serial0.device
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/bm_sbc_gateway --init /etc/bm_sbc/gateway/gateway.toml
+Restart=always
+RestartSec=3
+StartLimitIntervalSec=60
+StartLimitBurst=5
+User=root
+
+[Install]
+WantedBy=multi-user.target
