@@ -32,11 +32,3 @@ isp_freq=48
 v3d_freq=48
 EOF
 fi
-
-# set cpu governor
-echo "Setting CPU governor to low power mode"
-if ! grep -q 'GOVERNOR=powersave' /etc/default/cpufrequtils 2>/dev/null; then
-  tee -a /etc/default/cpufrequtils << 'EOF'
-GOVERNOR=powersave
-EOF
-fi
