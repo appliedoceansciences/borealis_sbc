@@ -64,7 +64,7 @@ Disable swap:
 Reduce headless power consumption:
 
     perl -i -pe 's/^dtoverlay=vc4-kms-v3d/#dtoverlay=vc4-kms-v3d/' /boot/firmware/config.txt
-    printf 'core_freq=250\ndisable_splash=1\nboot_delay=0\ndtoverlay=disable-bt\nenable_tvout=0\ndtparam=act_led_trigger=heartbeat\ngpu_mem=16\n\n' >> /boot/firmware/config.txt
+    printf 'core_freq=250\nh264_freq=48\nisp_freq=48\nv3d_freq=48\ndisable_splash=1\nboot_delay=0\ndtoverlay=disable-bt\nenable_tvout=0\ndtparam=act_led_trigger=heartbeat\ngpu_mem=16\n\n' >> /boot/firmware/config.txt
 
 Disable Linux serial console on the GPIO UART:
 
