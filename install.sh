@@ -17,6 +17,13 @@ make -C cobs_to_shm clean
 cmake -S bm_sbc --preset gateway
 cmake --build bm_sbc/build/gateway --parallel
 cmake --install bm_sbc/build/gateway
+mkdir -p /etc/bm_sbc/gateway
+if [ ! -e /etc/bm_sbc/gateway/gateway.toml ]; then
+    NODE_ID=$(od -An -N8 -tx1 /dev/urandom | tr -d ' \n')
+    sed "s/@NODE_ID@/$NODE_ID/" gateway.toml > /etc/bm_sbc/gateway/gateway.toml
+fi
+echo "d /run/bm_sbc 0755 root root -" > /usr/lib/tmpfiles.d/bm_sbc.conf
+systemd-tmpfiles --create /usr/lib/tmpfiles.d/bm_sbc.conf
 
 cp borealis_default.sh /usr/local/bin/
 
