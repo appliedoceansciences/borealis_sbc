@@ -14,16 +14,20 @@ mv cobs_to_shm/cobs_to_shm /usr/local/bin/
 make -C cobs_to_shm clean
 
 # compile and install bm_sbc_gateway
+GATEWAY_BUILD=bm_sbc/build/gateway
+GATEWAY_CONF_DIR=/etc/bm_sbc/gateway
+TMPFILES_CONF=/usr/lib/tmpfiles.d/bm_sbc.conf
 cmake -S bm_sbc --preset gateway
-cmake --build bm_sbc/build/gateway --parallel
-cmake --install bm_sbc/build/gateway
-mkdir -p /etc/bm_sbc/gateway
-if [ ! -e /etc/bm_sbc/gateway/gateway.toml ]; then
+cmake --build "$GATEWAY_BUILD" --parallel
+cmake --install "$GATEWAY_BUILD"
+mkdir -p "$GATEWAY_CONF_DIR"
+if [ ! -e "$GATEWAY_CONF_DIR/gateway.toml" ]; then
     NODE_ID=$(od -An -N8 -tx1 /dev/urandom | tr -d ' \n')
-    sed "s/@NODE_ID@/$NODE_ID/" gateway.toml > /etc/bm_sbc/gateway/gateway.toml
+    sed "s/@NODE_ID@/$NODE_ID/" gateway.toml > "$GATEWAY_CONF_DIR/gateway.toml"
 fi
-echo "d /run/bm_sbc 0755 root root -" > /usr/lib/tmpfiles.d/bm_sbc.conf
-systemd-tmpfiles --create /usr/lib/tmpfiles.d/bm_sbc.conf
+install -m 0644 bm_sbc/deploy/logrotate.d/bm_sbc     /etc/logrotate.d/bm_sbc
+install -m 0644 bm_sbc/deploy/tmpfiles.d/bm_sbc.conf "$TMPFILES_CONF"
+systemd-tmpfiles --create "$TMPFILES_CONF"
 
 cp borealis_default.sh /usr/local/bin/
 
