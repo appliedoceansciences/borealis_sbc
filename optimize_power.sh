@@ -25,10 +25,17 @@ dtoverlay=disable-bt
 enable_tvout=0
 dtparam=act_led_trigger=heartbeat
 gpu_mem=16
-arm_freq=600
-core_freq=48
+core_freq=250
 h264_freq=48
 isp_freq=48
 v3d_freq=48
+EOF
+fi
+
+# set cpu governor
+echo "Setting CPU governor to conservative"
+if ! grep -q 'GOVERNOR=conservative' /etc/default/cpufrequtils 2>/dev/null; then
+  tee -a /etc/default/cpufrequtils << 'EOF'
+GOVERNOR=conservative
 EOF
 fi
