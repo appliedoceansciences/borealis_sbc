@@ -3,7 +3,7 @@ Description=gpsd
 After=chronyd.service
 
 [Service]
-Type=simple
+Type=forking
 ExecStart=/usr/sbin/gpsd -D 5 -b -r -n udp://127.0.0.1:5000
 
 [Install]
