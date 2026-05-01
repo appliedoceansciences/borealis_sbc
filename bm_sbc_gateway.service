@@ -1,7 +1,7 @@
 [Unit]
 Description=bm_sbc_gateway
-After=dev-serial0.device
-Wants=dev-serial0.device
+After=dev-serial0.device dbus.service
+Wants=dev-serial0.device dbus.service
 StartLimitIntervalSec=60
 StartLimitBurst=5
 
