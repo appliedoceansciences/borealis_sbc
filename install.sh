@@ -10,7 +10,7 @@ systemctl disable --now gpsd.socket
 
 # compile and install cobs_to_shm
 make -C cobs_to_shm
-mv cobs_to_shm/cobs_to_shm /usr/local/bin/
+make -C cobs_to_shm install
 make -C cobs_to_shm clean
 
 cp handle_sbc_command.py /usr/local/bin/
