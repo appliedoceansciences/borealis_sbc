@@ -93,4 +93,4 @@ networks added in the `Edit a connection` will be used.
 
 ## Project-specific installation
 
-Prior to running the included `install.sh`, you should have cloned this repository, `apt install`ed git, and run `git submodule update --init` in this repository. Then, as root (obtainable with `sudo -i` after running the above instructions), run the included `./install.sh` from within this directory.
+Prior to running the included `install.sh`, you should have cloned this repository, `apt install`ed git, and run `git submodule update --init --recursive` in this repository. Then, as root (obtainable with `sudo -i` after running the above instructions), run the included `./install.sh` from within this directory.
