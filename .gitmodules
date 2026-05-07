@@ -1,3 +1,6 @@
 [submodule "cobs_to_shm"]
 	path = cobs_to_shm
 	url = ../cobs_to_shm
+[submodule "bm_sbc"]
+	path = bm_sbc
+	url = https://github.com/bristlemouth/bm_sbc.git
