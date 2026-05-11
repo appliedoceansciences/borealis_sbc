@@ -8,7 +8,7 @@ The Linux SBC within the BOREALIS payload has the following interconnects with o
 
 - one-way input of `$GPZDA` and other NMEA 0183 strings from the Mote via the hardware UART, intended to be consumed by `gpsd` or equivalent logic on the SBC
 
-- one-way output of COBS-framed packets from the SBC to the Mote in the other direction on the same hardware UART, for handling on the Mote by an implementation of the Bristlemouth `serial_bridge` logic
+- one-way output of COBS-framed packets from the SBC to the Mote in the other direction on the same hardware UART, for handling on the Mote by an implementation of the Bristlemouth `bm_sbc` logic
 
 - one-way input of COBS-framed raw acoustic sample packets via USB CDC from the SCARI acoustic data acquisition system
 
@@ -24,9 +24,9 @@ The Borealis SBC software package consists of:
 
 - `handle_sbc_command.py`, `handle_sbc_command.service`: This script runs at boot and has a short two-way communcation with the BOREALIS Mote firmware via the hardware UART, in which the Mote tells the SBC what other services to subsequently start. These files will be installed to `/usr/local/bin/` and `/etc/systemd/system/` respectively.
 
-- `gpsd.service`: This service invokes `gpsd` in such a way that it can concurrently receive NMEA strings from the same UART that customer application code can use to send output to the `serial_bridge` logic on the BOREALIS Mote. This file will be installed to `/etc/systemd/system/`
+- `gpsd.service`: This service invokes `gpsd` in such a way that it can concurrently receive NMEA strings from the same UART that customer application code can use to send output to the `serial_bridge` logic on the BOREALIS Mote. This file will be installed to `/etc/systemd/system/`.
 
-- `bm_serial.py`: This example code shows how to construct and send a COBS-framed packet to the `serial_bridge` logic on the Borealis Mote, in a cooperative fashion with any other logic doing the same thing on the SBC. This is a rough port of [https://github.com/bristlemouth/bm_serial/blob/develop/circuitpython/bm_serial.py] to generic Python that will run on a Raspberry Pi or macOS using the system Python, with an OS-level exclusive lock around the UART access, such that multiple processes on the Pi can send messages to the Bristlemouth ecosystem via the `serial_bridge` functionality on an attached Mote.
+- `bm_sbc_gateway.service`: This service manages the UART link with the Mote as a Bristlemouth port. This gateway service is a C++ application in [https://github.com/bristlemouth/bm_sbc] compiled for the Raspberry Pi and functions as a full-fledged Bristlemouth node visible in the network topology to all other nodes as a neighbor of the Mote. At install time, this service is enabled to always run at boot. This file will be installed to `/etc/systemd/system/`.
 
 ## Setting up Raspberry Pi for headless application hosting
 
@@ -93,4 +93,4 @@ networks added in the `Edit a connection` will be used.
 
 ## Project-specific installation
 
-Prior to running the included `install.sh`, you should have cloned this repository, `apt install`ed git, and run `git submodule update --init` in this repository. Then, as root (obtainable with `sudo -i` after running the above instructions), run the included `./install.sh` from within this directory.
+Prior to running the included `install.sh`, you should have cloned this repository, `apt install`ed git, and run `git submodule update --init --recursive` in this repository. Then, as root (obtainable with `sudo -i` after running the above instructions), run the included `./install.sh` from within this directory.
