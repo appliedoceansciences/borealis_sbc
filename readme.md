@@ -4,11 +4,13 @@
 
 The Linux SBC within the BOREALIS payload has the following interconnects with other components:
 
-- an initial two-way conversation with the BOREALIS Mote via the hardware UART, in which an `sbc_command` nonvolatile configuration variable on the Mote is delivered to and executed by the SBC
+- an initial two-way conversation with the BOREALIS Mote via Bristlemouth traffic the hardware UART, in which a timestamp and an `sbc_command` nonvolatile configuration variable on the Mote is delivered to and executed by the SBC
 
-- one-way input of `$GPZDA` and other NMEA 0183 strings from the Mote via the hardware UART, intended to be consumed by `gpsd` or equivalent logic on the SBC
+- one-way input of `$GPZDA` and other NMEA 0183 strings from the Mote via Bristlemouth traffic over the hardware UART, intended to be consumed by `gpsd` or equivalent logic on the SBC
 
-- one-way output of COBS-framed packets from the SBC to the Mote in the other direction on the same hardware UART, for handling on the Mote by an implementation of the Bristlemouth `bm_sbc` logic
+- one-way output of COBS-framed packets from the SBC to the Mote in the other direction on via Bristlemouth traffic over the same hardware UART, for handling on the Mote by an implementation of the Bristlemouth `bm_sbc` logic
+
+- other one- or two-way Bristlemouth traffic via the hardware UARt
 
 - one-way input of COBS-framed raw acoustic sample packets via USB CDC from the SCARI acoustic data acquisition system
 
@@ -21,8 +23,6 @@ The Borealis SBC software package consists of:
 - `cobs_to_shm`: A binary compiled from C code which reads COBS-framed packets from the USB CDC serial device representing the acoustic DAQ, and fans them out to a shared-memory ring buffer (and optionally logs them). This binary comes from its own repository, is not unique to BOREALIS, and will be installed to `/usr/local/bin/`.
 
 - `cobs_to_shm.service`: Invokes the above binary, with BOREALIS-specific logic. Will be installed to `/etc/systemd/system/`
-
-- `handle_sbc_command.py`, `handle_sbc_command.service`: This script runs at boot and has a short two-way communcation with the BOREALIS Mote firmware via the hardware UART, in which the Mote tells the SBC what other services to subsequently start. These files will be installed to `/usr/local/bin/` and `/etc/systemd/system/` respectively.
 
 - `gpsd.service`: This service invokes `gpsd` in such a way that it can concurrently receive NMEA strings from the same UART that customer application code can use to send output to the `serial_bridge` logic on the BOREALIS Mote. This file will be installed to `/etc/systemd/system/`.
 
