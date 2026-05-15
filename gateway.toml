@@ -2,4 +2,5 @@ node-id     = "0x@NODE_ID@"
 cfg-dir     = "/etc/bm_sbc/gateway"
 socket-dir  = "/run/bm_sbc"
 uart-device = "/dev/serial0"
+uart-baud   = 2000000
 log-level   = "debug"
