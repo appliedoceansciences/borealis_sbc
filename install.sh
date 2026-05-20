@@ -8,6 +8,8 @@ apt install socat gpsd chrony build-essential cmake python3-serial python3-numpy
 # installing gpsd enables this, we don't want it
 systemctl disable --now gpsd.socket
 
+git submodule update --init --recursive
+
 # compile and install cobs_to_shm
 make -C cobs_to_shm
 make -C cobs_to_shm install
