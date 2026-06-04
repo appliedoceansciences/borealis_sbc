@@ -3,7 +3,7 @@
 # add fastboot
 echo "Adding fastboot"
 if ! grep -q 'fastboot' /boot/firmware/cmdline.txt; then
-  perl -i -pe 's/rootwait/rootwait quiet fastboot nofsck/' /boot/firmware/cmdline.txt
+  perl -i -pe 's/rootwait/rootwait quiet fastboot/' /boot/firmware/cmdline.txt
 fi
 
 # append config.txt settings
