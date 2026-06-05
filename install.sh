@@ -3,7 +3,7 @@ set -e
 
 apt update
 
-apt install socat gpsd chrony build-essential cmake python3-serial python3-numpy
+apt install socat gpsd chrony build-essential cmake python3-serial python3-numpy picotool
 
 # installing gpsd enables this, we don't want it
 systemctl disable --now gpsd.socket
