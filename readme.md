@@ -42,40 +42,6 @@ After selecting storage, click "Next", and then click "Edit settings" in the res
 
 Write the image to a microSD card, boot the system, and ssh into it after determining its local IP address via any available means.
 
-### Basic setup
-
-After logging in via ssh, get to a root prompt and upgrade the system:
-
-    sudo -i
-    apt update && apt -y full-upgrade
-
-Prevent some systemd default behaviour which can interfere with persistent processes run as a regular user:
-
-    sed 's/#RemoveIPC=yes/RemoveIPC=no/' -i /etc/systemd/logind.conf
-
-Disable swap:
-
-    # trixie and later
-    perl -i -pe 's/rootwait/rootwait systemd.zram=0/' /boot/firmware/cmdline.txt
-
-    # bookworm and earlier
-    perl -i -pe 's/CONF_SWAPSIZE=512/CONF_SWAPSIZE=0/' /etc/dphys-swapfile
-
-Reduce headless power consumption:
-
-    perl -i -pe 's/^dtoverlay=vc4-kms-v3d/#dtoverlay=vc4-kms-v3d/' /boot/firmware/config.txt
-    printf 'core_freq=250\nh264_freq=48\nisp_freq=48\nv3d_freq=48\ndisable_splash=1\nboot_delay=0\ndtoverlay=disable-bt\nenable_tvout=0\ndtparam=act_led_trigger=heartbeat\ngpu_mem=16\n\n' >> /boot/firmware/config.txt
-
-Disable Linux serial console on the GPIO UART:
-
-    perl -i -pe 's/console=serial0,115200 //' /boot/firmware/cmdline.txt
-
-Configure sudo to allow `sudo -i` without requiring a password:
-
-    printf '%%sudo ALL=NOPASSWD: /bin/bash\n' > /etc/sudoers.d/010_sudo_dash_i_nopasswd
-
-Reboot the board with `reboot` to apply the above mods, and then log in and use `sudo -i` to get back to a root prompt.
-
 ### Adding backup networks
 
 After logging in via ssh, run:
@@ -94,3 +60,4 @@ networks added in the `Edit a connection` will be used.
 ## Project-specific installation
 
 Prior to running the included `install.sh`, you should have cloned this repository, `apt install`ed git, and run `git submodule update --init --recursive` in this repository. Then, as root (obtainable with `sudo -i` after running the above instructions), run the included `./install.sh` from within this directory.
+Reboot the board with `reboot` to apply the above installation.
