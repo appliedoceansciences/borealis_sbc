@@ -58,3 +58,6 @@ perl -i -pe 's/console=serial0,115200 //' /boot/firmware/cmdline.txt
 # reduce power and boot time
 ./optimize_power.sh
 ./optimize_boot.sh
+
+# set wifi backup
+systemctl start wifi_restore
