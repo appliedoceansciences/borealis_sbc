@@ -11,7 +11,7 @@ mkdir -p "$BACKUP"
 has_valid() { [ -n "$(find "$1" -maxdepth 1 -type f -size +0c 2>/dev/null)" ]; }
 
 # Copy the original valid network connection into the backup directory
-if has_valid "$RUN_CONN" && has_valid "$ETC_CONN"; then
+if has_valid "$RUN_CONN" || has_valid "$ETC_CONN"; then
     if ! has_valid "$BACKUP"; then
         cp "$ETC_CONN"/* "$BACKUP"/
         cp "$RUN_CONN"/* "$BACKUP"/
