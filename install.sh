@@ -3,6 +3,9 @@ set -e
 
 apt update
 
+# perform full upgrade to obtain latest kernel
+apt full-upgrade -y
+
 apt install socat gpsd chrony build-essential cmake python3-serial python3-numpy picotool
 
 # installing gpsd enables this, we don't want it
@@ -40,3 +43,16 @@ systemctl enable bm_sbc_gateway
 if ! grep SHM /etc/chrony/chrony.conf > /dev/null; then
     printf 'refclock SHM 0 offset 0.0 delay 0.2\nrefclock SHM 1 offset 0.0 delay 0.0\n' >> /etc/chrony/chrony.conf
 fi
+
+# prevent some systemd default behaviour which can interfere with persistent processes run as a regular user
+sed 's/^#*RemoveIPC=.*/RemoveIPC=no/' -i /etc/systemd/logind.conf
+
+# configure sudo to allow `sudo -i` without requiring a password:
+printf '%%sudo ALL=NOPASSWD: /bin/bash\n' > /etc/sudoers.d/010_sudo_dash_i_nopasswd
+
+# disable UART serial console
+perl -i -pe 's/console=serial0,115200 //' /boot/firmware/cmdline.txt
+
+# reduce power and boot time
+./optimize_power.sh
+./optimize_boot.sh
