@@ -36,13 +36,13 @@ systemd-tmpfiles --create "$TMPFILES_CONF"
 
 cp borealis_default.sh /usr/local/bin/
 
+install -m 0755 wifi_restore.sh /usr/local/bin/wifi_restore.sh
 cp *.service /etc/systemd/system/
 systemctl daemon-reload
 systemctl enable bm_sbc_gateway
+systemctl enable wifi_restore
 
-if ! grep SHM /etc/chrony/chrony.conf > /dev/null; then
-    printf 'refclock SHM 0 offset 0.0 delay 0.2\nrefclock SHM 1 offset 0.0 delay 0.0\n' >> /etc/chrony/chrony.conf
-fi
+cp chrony.conf /etc/chrony/chrony.conf
 
 # prevent some systemd default behaviour which can interfere with persistent processes run as a regular user
 sed 's/^#*RemoveIPC=.*/RemoveIPC=no/' -i /etc/systemd/logind.conf
@@ -56,3 +56,6 @@ perl -i -pe 's/console=serial0,115200 //' /boot/firmware/cmdline.txt
 # reduce power and boot time
 ./optimize_power.sh
 ./optimize_boot.sh
+
+# set wifi backup
+systemctl start wifi_restore
