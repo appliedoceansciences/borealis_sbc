@@ -42,9 +42,7 @@ systemctl daemon-reload
 systemctl enable bm_sbc_gateway
 systemctl enable wifi_restore
 
-if ! grep SHM /etc/chrony/chrony.conf > /dev/null; then
-    printf 'refclock SHM 0 offset 0.0 delay 0.2\nrefclock SHM 1 offset 0.0 delay 0.0\n' >> /etc/chrony/chrony.conf
-fi
+cp chrony.conf /etc/chrony/chrony.conf
 
 # prevent some systemd default behaviour which can interfere with persistent processes run as a regular user
 sed 's/^#*RemoveIPC=.*/RemoveIPC=no/' -i /etc/systemd/logind.conf
