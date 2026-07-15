@@ -11,6 +11,7 @@ ExecStart=/usr/local/bin/bm_sbc_gateway --init /etc/bm_sbc/gateway/gateway.toml
 Restart=always
 RestartSec=3
 User=root
+CPUAffinity=3
 
 [Install]
 WantedBy=multi-user.target
