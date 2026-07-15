@@ -11,12 +11,6 @@ if ! grep -q 'systemd.zram=0' /boot/firmware/cmdline.txt; then
   perl -i -pe 's/rootwait/rootwait systemd.zram=0/' /boot/firmware/cmdline.txt
 fi
 
-#disable serial console
-echo "Disabling serial console"
-if grep -q 'console=serial0,115200' /boot/firmware/config.txt; then
-  perl -i -pe 's/console=serial0,115200 //' /boot/firmware/cmdline.txt
-fi
-
 # append config.txt settings
 echo "Updating /boot/firmware/config.txt with power savings"
 if ! grep -q 'dtoverlay=disable-bt' /boot/firmware/config.txt; then
