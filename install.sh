@@ -38,9 +38,19 @@ cp borealis_default.sh /usr/local/bin/
 
 install -m 0755 wifi_restore.sh /usr/local/bin/wifi_restore.sh
 cp *.service /etc/systemd/system/
-systemctl daemon-reload
 systemctl enable bm_sbc_gateway
 systemctl enable wifi_restore
+
+# fence all services onto cores 1+, reserving core 0 for the gateway
+NCPU=$(nproc)
+if [ "$NCPU" -gt 1 ]; then
+    if [ "$NCPU" -gt 2 ]; then OTHERS="1-$((NCPU - 1))"; else OTHERS=1; fi
+    mkdir -p /etc/systemd/system.conf.d
+    printf '[Manager]\nCPUAffinity=%s\n' "$OTHERS" \
+        > /etc/systemd/system.conf.d/10-cpuset.conf
+fi
+
+systemctl daemon-reload
 
 cp chrony.conf /etc/chrony/chrony.conf
 
