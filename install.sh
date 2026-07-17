@@ -58,6 +58,7 @@ fi
 
 # add service to pin UART interrupts to core 0
 install -m 0755 pin_uart_irq_thread.sh /usr/local/bin/pin_uart_irq_thread.sh
+systemctl enable pin_uart_irq_thread.service
 
 
 systemctl daemon-reload
