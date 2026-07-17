@@ -1,0 +1,10 @@
+[Unit]
+Description=Pin UART/DMA IRQ threads to core 0 at RT priority
+After=multi-user.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/pin_uart_irq_thread.sh
+
+[Install]
+WantedBy=multi-user.target

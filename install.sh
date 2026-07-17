@@ -50,6 +50,16 @@ if [ "$NCPU" -gt 1 ]; then
         > /etc/systemd/system.conf.d/10-cpuset.conf
 fi
 
+# add threadirqs to force handling of UART interrupts on core 0
+echo "Adding threadirqs"
+if ! grep -q 'threadirqs' /boot/firmware/cmdline.txt; then
+  perl -i -pe 's/rootwait/rootwait threadirqs/' /boot/firmware/cmdline.txt
+fi
+
+# add service to pin UART interrupts to core 0
+install -m 0755 pin_uart_irq_thread.sh /usr/local/bin/pin_uart_irq_thread.sh
+
+
 systemctl daemon-reload
 
 cp chrony.conf /etc/chrony/chrony.conf
