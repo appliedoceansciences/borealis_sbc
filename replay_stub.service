@@ -1,0 +1,13 @@
+[Unit]
+Description=Replay Stub Daemon
+After=cobs_to_shm.service
+
+[Service]
+Type=simple
+Group=dialout
+Restart=on-failure
+RestartSec=3
+ExecStart=sh -c "exec /etc/stub_runner/replay_stub.py shm"
+
+[Install]
+WantedBy=multi-user.target
