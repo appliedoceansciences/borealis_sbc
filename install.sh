@@ -6,7 +6,7 @@ apt update
 # perform full upgrade to obtain latest kernel
 apt full-upgrade -y
 
-apt install socat gpsd chrony build-essential cmake python3-serial python3-numpy picotool
+apt install socat gpsd chrony build-essential cmake python3-serial python3-numpy python3-cbor2 picotool
 
 # installing gpsd enables this, we don't want it
 systemctl disable --now gpsd.socket
@@ -33,6 +33,16 @@ fi
 install -m 0644 bm_sbc/deploy/logrotate.d/bm_sbc     /etc/logrotate.d/bm_sbc
 install -m 0644 bm_sbc/deploy/tmpfiles.d/bm_sbc.conf "$TMPFILES_CONF"
 systemd-tmpfiles --create "$TMPFILES_CONF"
+
+# copy over default stub runner
+STUB_DIR=/etc/stub_runner
+SBC_GATEWAY_DIR="$STUB_DIR"/bm_sbc_gateway
+mkdir -p "$STUB_DIR"
+mkdir -p "$SBC_GATEWAY_DIR"
+install -m 0755 replay_stub.py "$STUB_DIR"
+install -m 0755 cobs_to_shm/shared_memory_ringbuffer_reader.py "$STUB_DIR"
+install -m 0755 cobs_to_shm/parse_acoustic_packets.py "$STUB_DIR"
+install -m 0755 bm_sbc/clients/python/bm_sbc_gateway/__init__.py "$SBC_GATEWAY_DIR"
 
 cp borealis_default.sh /usr/local/bin/
 
