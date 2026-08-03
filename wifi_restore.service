@@ -1,0 +1,12 @@
+[Unit]
+Description=Restore Wi-Fi credentials from backup
+Before=NetworkManager.service wpa_supplicant.service
+After=local-fs.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/wifi_restore.sh
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
