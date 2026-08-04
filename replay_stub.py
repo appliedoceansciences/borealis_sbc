@@ -59,7 +59,7 @@ def main():
         print("Replay not enabled, exiting")
         sys.exit(0)
 
-    source = (
+    shm_name = (
         sys.argv[1].split(":")[1]
         if len(sys.argv) > 1 and "shm:" in sys.argv[1]
         else "/cobs_to_shm"
