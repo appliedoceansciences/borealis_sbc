@@ -16,9 +16,12 @@ make -C cobs_to_shm clean
 cp handle_sbc_command.py /usr/local/bin/
 cp borealis_default.sh /usr/local/bin/
 
+install -m 0755 wifi_restore.sh /usr/local/bin/wifi_restore.sh
+
 cp *.service /etc/systemd/system/
 systemctl daemon-reload
 systemctl enable handle_sbc_command
+systemctl enable wifi_restore
 
 if ! grep SHM /etc/chrony/chrony.conf > /dev/null; then
     printf 'refclock SHM 0 offset 0.0 delay 0.2\nrefclock SHM 1 offset 0.0 delay 0.0\n' >> /etc/chrony/chrony.conf
