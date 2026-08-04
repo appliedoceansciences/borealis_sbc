@@ -11,41 +11,32 @@ import sys
 import time
 import re
 
-from shared_memory_ringbuffer_reader import shared_memory_ringbuffer_generator
+from shared_memory_ringbuffer_reader import (
+    shared_memory_ringbuffer_reader_recv_blocking,
+    shared_memory_ringbuffer_reader_init,
+)
 from parse_acoustic_packets import parse_acoustic_packet
 
 WINDOW_S = 5.0
-CAUGHT_UP_RATIO_MIN = 0.95
-CAUGHT_UP_RATIO_MAX = 1.05
-CAUGHT_UP_WINDOWS = 2
+CAUGHT_UP_RATIO_LIMIT = 1.5
 
 
-def yield_packet_bytes_from_shm(source):
-    for packet_with_logging_header in shared_memory_ringbuffer_generator(source):
-        _, timestamp_lsbs, timestamp_msbs = struct.unpack(
-            "<HHI", packet_with_logging_header[0:8]
-        )
+def next_acoustic_packet(shm):
+    # loop until we can return an acoustic packet
+    while True:
+        # this returns None if the eof condition has been reached
+        payload = shared_memory_ringbuffer_reader_recv_blocking(shm)
+        if not payload:
+            return None
+
+        # interpret these eight bytes as a 16-bit packet size and 48-bit timestamp
+        _, timestamp_lsbs, timestamp_msbs = struct.unpack("<HHI", payload[0:8])
         logged_timestamp_microseconds = ((timestamp_msbs << 16) | timestamp_lsbs) * 16
-        yield packet_with_logging_header[8:], logged_timestamp_microseconds
 
-
-def replay_ratio(seqnum_start, logged_us_start, seqnum, logged_us, packet_duration_s):
-    packets = (seqnum - seqnum_start) % 65536
-    if logged_us_start == logged_us:
-        return 0.0
-    return packets * packet_duration_s / ((logged_us - logged_us_start) / 1e6)
-
-
-def next_acoustic_packet(yield_packet_bytes_function, source):
-    for packet_bytes, logged_timestamp_microseconds in yield_packet_bytes_function(
-        source
-    ):
-        # attempt to parse the packet bytes as an acoustic packet
-        packet = parse_acoustic_packet(packet_bytes, logged_timestamp_microseconds)
-        if not packet:
-            continue
-
-        return packet
+        # make sure the payload bytes are an acoustic packet and not something else
+        packet = parse_acoustic_packet(payload[8:], logged_timestamp_microseconds)
+        if packet:
+            return packet
 
 
 def main():
@@ -73,38 +64,48 @@ def main():
         if len(sys.argv) > 1 and "shm:" in sys.argv[1]
         else "/cobs_to_shm"
     )
-    window_start = None
-    windows_caught_up = 0
+
+    # loop until shm exists and is being written to
+    while True:
+        shm = shared_memory_ringbuffer_reader_init(shm_name)
+        if shm is not None:
+            break
+        time.sleep(0.05)
+
+    # get the first packet
+    packet = None
+    while packet is None:
+        packet = next_acoustic_packet(shm)
+
+    approx_us_per_packet = packet.samples.shape[0] * 1e6 / packet.fs
 
     while True:
-        # Read from SHM every WINDOW_S to see if data has caught up
+        packet_prev = packet
         time.sleep(WINDOW_S)
-        packet = next_acoustic_packet(yield_packet_bytes_from_shm, source)
-        if not packet:
-            print("cobs_to_shm is no longer running, exiting now...", file=sys.stderr)
-            sys.exit(0)
 
-        if window_start is None:
-            window_start = (packet.seqnum, packet.logged_timestamp_microseconds)
+        # fast forward over all packets that have been received
+        shm.reader_cursor = shm.view_of_writer_cursor[0]
+        packet = next_acoustic_packet(shm)
+        if packet is None:
+            break
+
+        # note that seqnum loops on the order of minutes
+        packets_elapsed = (packet.seqnum - packet_prev.seqnum) & 65535
+        data_us_elapsed = packets_elapsed * approx_us_per_packet
+
+        wall_us_elapsed = (
+            packet.logged_timestamp_microseconds
+            - packet_prev.logged_timestamp_microseconds
+        )
+        if 0 == wall_us_elapsed:
             continue
 
-        seqnum_start, logged_us_start = window_start
-        ratio = replay_ratio(
-            seqnum_start,
-            logged_us_start,
-            packet.seqnum,
-            packet.logged_timestamp_microseconds,
-            packet.samples.shape[0] / packet.fs,
-        )
-        window_start = (packet.seqnum, packet.logged_timestamp_microseconds)
+        # this number should be 1.0 in real time and measurably higher during replay
+        rate = data_us_elapsed / wall_us_elapsed
 
-        if CAUGHT_UP_RATIO_MIN < ratio <= CAUGHT_UP_RATIO_MAX:
-            windows_caught_up += 1
-        else:
-            windows_caught_up = 0
-        print("replay running at %.2fx realtime" % ratio, file=sys.stderr)
+        print("rate is %g" % rate, file=sys.stderr)
 
-        if windows_caught_up >= CAUGHT_UP_WINDOWS:
+        if rate <= CAUGHT_UP_RATIO_LIMIT:
             print("replay caught up to realtime, notifying gateway", file=sys.stderr)
             replay_caught_up()
             return
