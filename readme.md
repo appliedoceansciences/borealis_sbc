@@ -59,5 +59,15 @@ networks added in the `Edit a connection` will be used.
 
 ## Project-specific installation
 
-Prior to running the included `install.sh`, you should have cloned this repository, `apt install`ed git, and run `git submodule update --init --recursive` in this repository. Then, as root (obtainable with `sudo -i` after running the above instructions), run the included `./install.sh` from within this directory.
-Reboot the board with `reboot` to apply the above installation.
+Log in as the `borealis` user and run the following commands:
+
+    sudo apt install git
+    git clone --depth 1 https://github.com/appliedoceansciences/borealis_sbc
+    cd borealis_sbc
+    git submodule update --init --recursive
+    sudo -s
+
+As root, from within the same directory:
+
+    ./install.sh
+    reboot
