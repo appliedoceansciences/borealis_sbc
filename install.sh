@@ -63,6 +63,9 @@ printf '%%sudo ALL=NOPASSWD: /bin/bash\n' > /etc/sudoers.d/010_sudo_dash_i_nopas
 # disable UART serial console
 perl -i -pe 's/console=serial0,115200 //' /boot/firmware/cmdline.txt
 
+# enable persistent journald
+mkdir -p /etc/systemd/journald.conf.d && printf '[Journal]\nStorage=persistent\n' > /etc/systemd/journald.conf.d/80-raspi-config-journal-storage.conf
+
 # reduce power and boot time
 ./optimize_power.sh
 ./optimize_boot.sh
