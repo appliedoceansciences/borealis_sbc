@@ -6,7 +6,7 @@ apt update
 # perform full upgrade to obtain latest kernel
 apt full-upgrade -y
 
-apt install socat gpsd chrony build-essential cmake python3-serial python3-numpy python3-cbor2 picotool
+apt -y install socat gpsd chrony build-essential cmake python3-serial python3-numpy python3-cbor2 picotool
 
 # installing gpsd enables this, we don't want it
 systemctl disable --now gpsd.socket
