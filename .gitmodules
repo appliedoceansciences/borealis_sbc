@@ -3,4 +3,4 @@
 	url = https://github.com/bristlemouth/bm_sbc.git
 [submodule "udp_to_shm"]
 	path = udp_to_shm
-	url = git@github.com:appliedoceansciences/udp_to_shm.git
+	url = https://github.com/appliedoceansciences/udp_to_shm.git
