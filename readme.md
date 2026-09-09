@@ -28,7 +28,7 @@ The Borealis SBC software package consists of:
 
 - `bm_sbc_gateway.service`: This service manages the UART link with the Mote as a Bristlemouth port. This gateway service is a C++ application in [https://github.com/bristlemouth/bm_sbc] compiled for the Raspberry Pi and functions as a full-fledged Bristlemouth node visible in the network topology to all other nodes as a neighbor of the Mote. At install time, this service is enabled to always run at boot. This file will be installed to `/etc/systemd/system/`.
 
-## Setting up Raspberry Pi for headless application hosting
+## Setting up Raspberry Pi
 
 Most of the procedure below is agnostic to the type of Pi, provided it is a 64-bit processor. Some of the items may be specific to the Pi Zero 2W.
 
@@ -38,7 +38,7 @@ With a blank microSD card in the slot on your computer, download and run the lat
 
 Under "Device", select "Raspberry Pi Zero 2W", and then under "Operating System", select "Raspberry Pi OS (other)" and scroll down to "Raspberry Pi OS Lite (64-bit)".
 
-After selecting storage, click "Next", and then click "Edit settings" in the resulting box. Under "General", set a hostname, create a username and password, and provide wifi credentials. Under "Services", click "Allow public-key authentication only" and paste in the contents of your existing `~/.ssh/id_ed25519.pub` or `~/.ssh/id_rsa.pub`, or accept the automatically populated public key if it has done so. Do *NOT* click "Run ssh-keygen" unless you have verified that neither of those files already exist. Click "Save" and then "Yes".
+Set "borealis" as the hostname, username, password, ssid, and password. Under "Services", make sure "Allow public-key authentication only" is not selected.
 
 Write the image to a microSD card, boot the system, and ssh into it after determining its local IP address via any available means.
 
