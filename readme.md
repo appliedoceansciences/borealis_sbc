@@ -36,9 +36,19 @@ Most of the procedure below is agnostic to the type of Pi, provided it is a 64-b
 
 With a blank microSD card in the slot on your computer, download and run the latest version of the the Raspberry Pi imager tool.
 
-Under "Device", select "Raspberry Pi Zero 2W", and then under "Operating System", select "Raspberry Pi OS (other)" and scroll down to "Raspberry Pi OS Lite (64-bit)".
+On the "Device" tab, select "Raspberry Pi Zero 2W", then "Raspberry Pi OS (other)", then "Raspberry Pi OS Lite (64-bit)" for the operating system image.
 
-Set "borealis" as the hostname, username, password, ssid, and password. Under "Services", make sure "Allow public-key authentication only" is not selected.
+On the "Storage" tab, select the SD card reader. If it is marked read-only, ensure that your SD to microSD adapter does not have the read-only slider slid.
+
+On the "Customization" screen, for hostname, type "borealis".
+
+On the "Localisation" screen, choose Washington DC as the capital city, GMT as the time zone, and "us" as the keyboard layout.
+
+On the "User" screen, use "borealis" as the username and password.
+
+On the "Wi-Fi" screen, use "borealis" as the SSID and password.
+
+On the "SSH authentication" screen, make sure "use password authentication" is selected.
 
 Write the image to a microSD card, boot the system, and ssh into it after determining its local IP address via any available means.
 
