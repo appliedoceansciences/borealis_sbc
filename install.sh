@@ -1,6 +1,8 @@
 #!/bin/sh
 set -e
 
+timedatectl set-timezone UTC
+
 apt update
 
 # perform full upgrade to obtain latest kernel
