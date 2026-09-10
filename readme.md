@@ -72,7 +72,7 @@ networks added in the `Edit a connection` will be used.
 Log in as the `borealis` user and run the following commands:
 
     sudo apt install git
-    git clone --depth 1 --recurse-submodules --branch udp_input https://github.com/appliedoceansciences/borealis_sbc
+    git clone --depth 1 --recurse-submodules https://github.com/appliedoceansciences/borealis_sbc
     cd borealis_sbc
     sudo -s
 
