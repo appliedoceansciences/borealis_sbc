@@ -15,10 +15,10 @@ systemctl disable --now gpsd.socket
 
 git submodule update --init --recursive
 
-# compile and install cobs_to_shm
-make -C cobs_to_shm
-make -C cobs_to_shm install
-make -C cobs_to_shm clean
+# compile and install udp_to_shm
+make -C udp_to_shm
+make -C udp_to_shm install
+make -C udp_to_shm clean
 
 # compile and install bm_sbc_gateway
 GATEWAY_BUILD=bm_sbc/build/gateway
@@ -42,8 +42,8 @@ SBC_GATEWAY_DIR="$STUB_DIR"/bm_sbc_gateway
 mkdir -p "$STUB_DIR"
 mkdir -p "$SBC_GATEWAY_DIR"
 install -m 0755 replay_stub.py "$STUB_DIR"
-install -m 0755 cobs_to_shm/shared_memory_ringbuffer_reader.py "$STUB_DIR"
-install -m 0755 cobs_to_shm/parse_acoustic_packets.py "$STUB_DIR"
+install -m 0755 udp_to_shm/shared_memory_ringbuffer_reader.py "$STUB_DIR"
+install -m 0755 udp_to_shm/parse_acoustic_packets.py "$STUB_DIR"
 install -m 0755 bm_sbc/clients/python/bm_sbc_gateway/__init__.py "$SBC_GATEWAY_DIR"
 
 cp borealis_default.sh /usr/local/bin/
