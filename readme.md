@@ -74,9 +74,5 @@ Log in as the `borealis` user and run the following commands:
     sudo apt install git
     git clone --depth 1 --recurse-submodules https://github.com/appliedoceansciences/borealis_sbc
     cd borealis_sbc
-    sudo -s
-
-As root, from within the same directory:
-
-    ./install.sh
-    reboot
+    sudo ./install.sh
+    sudo reboot
