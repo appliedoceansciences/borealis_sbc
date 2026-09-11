@@ -52,9 +52,19 @@ On the "SSH authentication" screen, make sure "use password authentication" is s
 
 Write the image to a microSD card, boot the system, and ssh into it after determining its local IP address via any available means.
 
-### Adding backup networks
+### Installing the software package
 
-After logging in via ssh, run:
+Log in as the `borealis` user and run the following commands:
+
+    sudo apt install git
+    git clone --depth 1 --recurse-submodules https://github.com/appliedoceansciences/borealis_sbc
+    cd borealis_sbc
+    sudo ./install.sh
+    sudo reboot
+
+### Adding backup Wi-Fi networks
+
+If necessary, additional known Wi-Fi networks can be added using the following procedure. After logging in via ssh, run:
 
     sudo -i nmtui
 
@@ -66,13 +76,3 @@ Here select the connection to activate.
 
 If the main network is not found on the Pi on boot,
 networks added in the `Edit a connection` will be used.
-
-## Project-specific installation
-
-Log in as the `borealis` user and run the following commands:
-
-    sudo apt install git
-    git clone --depth 1 --recurse-submodules https://github.com/appliedoceansciences/borealis_sbc
-    cd borealis_sbc
-    sudo ./install.sh
-    sudo reboot
