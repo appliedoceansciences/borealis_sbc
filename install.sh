@@ -13,8 +13,6 @@ apt -y install socat gpsd chrony build-essential cmake python3-serial python3-nu
 # installing gpsd enables this, we don't want it
 systemctl disable --now gpsd.socket
 
-git submodule update --init --recursive
-
 # compile and install udp_to_shm
 make -C udp_to_shm
 make -C udp_to_shm install
